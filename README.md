@@ -1,2 +1,2 @@
 # axionns
-Photon-axion conversion in photon clumps colliding with neutron stars
+Photon-axion conversion in axion clumps colliding with neutron stars
