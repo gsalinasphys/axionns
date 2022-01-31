@@ -1,7 +1,7 @@
 import numpy as np
 from scripts.basic_functions import G_N, c, mag_vector, numbers_times_vectors, sphere_point_picking, angle_between_vecs
 from scipy.spatial.transform import Rotation
-from scipy.optimize import root_scalar
+from scipy.optimize import root_scalar, root
 
 # A neutron star
 class NeutronStar:
@@ -40,7 +40,7 @@ class NeutronStar:
         resonant_freq = axionmass*15.192669 # in GHz
         to_minimize = lambda scale: self.wplasma([scale*np.array(direction)])[0] - resonant_freq
         try:
-            return root_scalar(to_minimize, bracket=[self.radius, 100*self.radius], method='brentq').root
+            return root_scalar(to_minimize, bracket=[self.radius, 100*self.radius], method='brenth').root
         except ValueError:
             return None
 
@@ -68,7 +68,7 @@ class NeutronStar:
         resonant_freq2 = np.power(axionmass_GHz, 2)*omega2/(np.power(axionmass_GHz*np.cos(theta), 2) + omega2*np.power(np.sin(theta), 2))
         to_minimize = lambda scale: self.wplasma([scale*np.array(position)/mag_vector(position)])[0] - np.sqrt(resonant_freq2)
         try:
-            return root_scalar(to_minimize, bracket=[self.radius, 100*self.radius], method='brentq').root
+            return root_scalar(to_minimize, bracket=[self.radius, 100*self.radius], method='brenth').root
         except ValueError:
             return None
 
