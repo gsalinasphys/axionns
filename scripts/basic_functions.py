@@ -2,6 +2,7 @@ import numpy as np
 import string
 import random
 import os
+from scipy.spatial import ConvexHull
 
 G_N = 1.325e11  # Newton's constant in km^3/M_Sun/s^2
 c = 2.99792458*1e5  # Speed of light in km/s
@@ -42,10 +43,12 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 
 def mkdir_event(NS, clump, r_in, v_in, n_in, size=6, chars=string.ascii_uppercase):     # Variable 'clump' should be an instance of AS or MC
     id_str = ''.join(random.choice(chars) for _ in range(size))
-    os.makedirs(output_dir + clump.clump_type_short + id_str, exist_ok=True)
+    event_name = clump.clump_type_short + id_str
+    os.makedirs(output_dir + event_name, exist_ok=True)
 
-    f = open(output_dir + clump.clump_type_short + id_str + '/' + 'README.txt', 'w')
+    f = open(output_dir + event_name + '/' + 'README.txt', 'w')
 
+    f.write('Event name: ' + event_name + '\n')
     f.write('Axion mass: ' + str(clump.axionmass) + ' x 10^{-5} eV' + '\n\n')
 
     f.write('-'*25 + ' Neutron star properties ' + '-'*50 + '\n')
@@ -74,7 +77,7 @@ def mkdir_event(NS, clump, r_in, v_in, n_in, size=6, chars=string.ascii_uppercas
     
     f.close()
 
-    return clump.clump_type_short + id_str
+    return event_name
 
 def join_npys(directory_str):
     directory = os.fsencode(output_dir + directory_str)
@@ -90,3 +93,14 @@ def join_npys(directory_str):
     
     data_array = np.concatenate(data_all)
     np.save(output_dir + directory_str + '/' + directory_str, data_array)
+
+def pnt_in_cvex_hull(hull, pnts):
+    '''
+    Checks if `pnt` is inside the convex hull.
+    `hull` -- a QHull ConvexHull object
+    `pnt` -- point array of shape (3,)
+    '''
+    new_hull = ConvexHull(np.concatenate((hull.points, pnts)))
+    if np.array_equal(new_hull.vertices, hull.vertices): 
+        return True
+    return False

@@ -2,6 +2,7 @@ import numpy as np
 import random
 from scripts.basic_functions import rho_eq, mag_vector, G_N
 from classes.particles import Particles
+from scipy.spatial import ConvexHull
 
 # An axion minicluster
 class AxionMiniclusterNFW:
@@ -76,17 +77,24 @@ class AxionMiniclusterNFW:
 
         return bmax
 
-    # Populate the axion minicluster with ndraw particles with a maximum impact parameter 'bmax'
-    def draw_particles(self, ndraw, bmax, resolution = 1000, multiplier = 100):
+    def bmax_cylinder(self, ndraw, bmax, length = [-1,1], resolution = 1000):    # Variable 'length' is an interval contained in [-1, 1]
         rinterv = np.linspace(0, bmax, resolution)
         possible_rs = np.random.choice(rinterv, ndraw*resolution, p = rinterv/np.sum(rinterv))
         possible_thetas = np.random.uniform(0, 2*np.pi, ndraw*resolution)
-        possible_ys = mag_vector(self.center) + np.random.uniform(-self.radius_trunc(), self.radius_trunc(), ndraw*resolution)
+        possible_ys = mag_vector(self.center) + np.random.uniform(self.radius_trunc()*length[0], self.radius_trunc()*length[1], ndraw*resolution)
 
         possible_xs, possible_zs = possible_rs*np.cos(possible_thetas), possible_rs*np.sin(possible_thetas)
 
         positions_possible = np.array([possible_xs, possible_ys, possible_zs])
         positions_possible = positions_possible.T
+
+        ch = ConvexHull(positions_possible)
+        mass_inside = np.sum(self.density_profile(positions_possible))*ch.volume/len(positions_possible)
+        return positions_possible, mass_inside
+
+    # Populate the axion minicluster with ndraw particles with a maximum impact parameter 'bmax'
+    def draw_particles(self, ndraw, bmax, length = [-1,1], resolution = 1000, multiplier = 100):
+        positions_possible, mass_inside = self.bmax_cylinder(ndraw, bmax, length = length, resolution = resolution)
 
         positions = np.array(random.choices(positions_possible, weights = self.density_profile(positions_possible), k = ndraw))
 
@@ -96,18 +104,4 @@ class AxionMiniclusterNFW:
         velocities = np.array([self.vcenter]*len(vs_dispersion)) + vs_dispersion
         positions = np.array([[position]*multiplier for position in positions]).reshape(len(positions)*multiplier, 3)
 
-        return positions, velocities
-
-
-    # def density_profile_discrete(self, resolution = 1000):  # In units of 10^{-10}*M_Sun/km^3
-    #     rinterv = np.linspace(0, self.radius_trunc(), resolution)
-    #     density_profile = self.rho_s()/(rinterv/self.rs()*np.power(1 + rinterv/self.rs(), 2))
-    #     return rinterv, density_profile
-
-    # def gravitational_potential(self, positions, resolution = 1000):   # In units of (km/s)^2
-    #     positions_from_center = positions - np.array([self.center]*len(positions))
-    #     indices_rtrunc = mag_vector(positions_from_center)/(self.radius_trunc())*len(self.density_profile_discrete(resolution)[0])
-    #     indices_rtrunc = indices_rtrunc.astype(int)
-    #     first_term = -G_N*self.encl_mass(positions)/mag_vector(positions_from_center)
-    #     second_term = -4*np.pi*G_N*np.array([np.trapz(self.density_profile_discrete(resolution)[1][index_rtrunc:]*self.density_profile_discrete(resolution)[0][index_rtrunc:], self.density_profile_discrete(resolution)[0][index_rtrunc:]) for index_rtrunc in indices_rtrunc])
-    #     return 1e-10*(first_term + second_term)
+        return positions, velocities, mass_inside
