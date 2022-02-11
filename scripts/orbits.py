@@ -12,9 +12,9 @@ def evolve_AC(AC, NS, rprecision=1e-4, save_interval = None, conservation_check 
     if AC_particle.nparticles == 0:
         return None
     # Evolve until it reaches the Roche radius
-    conserv_check = AC_particle.trajectories(NS, roche, min_or_max = -1, rprecision = rprecision, save_interval = save_interval, conservation_check = conservation_check)
+    conservation_check_and_time = AC_particle.trajectories(NS, roche, min_or_max = -1, rprecision = rprecision, save_interval = save_interval, conservation_check = conservation_check)
     AC.center, AC.vcenter = AC_particle.positions[0], AC_particle.velocities[0]
-    return conserv_check
+    return conservation_check_and_time
 
 def draw_particles_AC(AC, nparticles, bmax, length):
     if AC.clump_type_short == 'MCNFW':

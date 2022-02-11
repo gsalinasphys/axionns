@@ -2,12 +2,14 @@ import numpy as np
 import string
 import random
 import os
-from scipy.spatial import ConvexHull
 
 G_N = 1.325e11  # Newton's constant in km^3/M_Sun/s^2
 c = 2.99792458*1e5  # Speed of light in km/s
 rho_eq = 5.78*1e-28 # Energy density at matter radiation equality in units of 10^{-10}*M_Sun/km^3
 output_dir = 'C:/Users/gsali/Dropbox/output/axionns/'
+conv_factor_eV_GHz = 1.5192669e6
+conv_factor_km_eVinv = 1.e10/1.9732705
+conv_factor_G_eV2 = 1/14.440271
 
 # Magnitude of vectors
 def mag_vector(vs):
@@ -93,14 +95,3 @@ def join_npys(directory_str):
     
     data_array = np.concatenate(data_all)
     np.save(output_dir + directory_str + '/' + directory_str, data_array)
-
-def pnt_in_cvex_hull(hull, pnts):
-    '''
-    Checks if `pnt` is inside the convex hull.
-    `hull` -- a QHull ConvexHull object
-    `pnt` -- point array of shape (3,)
-    '''
-    new_hull = ConvexHull(np.concatenate((hull.points, pnts)))
-    if np.array_equal(new_hull.vertices, hull.vertices): 
-        return True
-    return False

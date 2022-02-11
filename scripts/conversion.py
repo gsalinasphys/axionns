@@ -1,6 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from scripts.basic_functions import output_dir, mag_vector
+from scripts.basic_functions import mag_vector
 from classes.particles import Particles
 
 def divide_into_singles(part_trajs):
@@ -19,7 +18,7 @@ def divide_into_singles(part_trajs):
     return single_particles
 
 
-def find_hits(single_particle, NS, t_in):
+def find_hits(single_particle, NS):
     hits = []
     single_particle = single_particle[single_particle[:, 1].argsort()]
 
@@ -31,20 +30,16 @@ def find_hits(single_particle, NS, t_in):
     if np.min(distances) < NS.conversion_radius_max(Particles.axionmass):
         out_or_in = 1
         for i, position in enumerate(positions):
-            if i > 0:
-                NS.rotate_dipole_moment(times[i] - times[i - 1])
-            elif i == 0:
-                NS.rotate_dipole_moment(times[i] - t_in)
-            conv_radius = NS.conversion_radius_est(position, Particles.axionmass)
+            conv_radius = NS.conversion_radius_est(position, times[i], Particles.axionmass)
             if conv_radius is not None:
                 if out_or_in*mag_vector(position) < out_or_in*conv_radius:
                     out_or_in *= -1
-                    hits.append([times[i], position[0], position[1], position[2], velocities[i][0], velocities[i][1], velocities[i][2]])
+                    hits.append([single_particle[...,0][0], times[i], position[0], position[1], position[2], velocities[i][0], velocities[i][1], velocities[i][2]])
 
     return np.array(hits)
 
-def find_all_hits(single_particles, NS, t_in, pool):
-    all_hits = pool.starmap(find_hits, [(single_particle, NS, t_in) for single_particle in single_particles])
+def find_all_hits(single_particles, NS, pool):
+    all_hits = pool.starmap(find_hits, [(single_particle, NS) for single_particle in single_particles])
 
     all_hits = [all_hit for all_hit in all_hits if len(all_hit) > 0]
     all_hits_flat = []
