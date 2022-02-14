@@ -1,6 +1,8 @@
 import numpy as np
 from scripts.basic_functions import mag_vector, mkdir_event, join_npys
 from classes.particles import Particles
+from classes.minicluster import AxionMiniclusterNFW
+from classes.axionstar import AxionStar
 
 # Trajectory of axion clump as point particle, starting from positon r0 with velocity v0x in the -x-direction
 def evolve_AC(AC, NS, rprecision=1e-4, save_interval = None, conservation_check = False):
@@ -21,7 +23,7 @@ def draw_particles_AC(AC, nparticles, bmax, length):
         bmax += 3*mag_vector(AC.center)/mag_vector(AC.vcenter)*AC.circ_v([np.array([AC.radius_trunc(),0,0]) + AC.center])[0]
         return AC.draw_particles(nparticles, bmax, length)
     elif AC.clump_type_short == 'dAS':
-        return AC.draw_particles(nparticles)
+        return AC.draw_particles(nparticles), AC.mass
 
 # Trajectory of nparticles from an axion clump in the field of a neutron star
 def evolve_particles(AC, NS, nparticles, bmax = None, length = [-1,1], rprecision=1e-4, save_interval = None, save_file = None, conservation_check = False):   # nparticles has to be larger than one
@@ -53,7 +55,7 @@ def evolve(NS, AC, pool, nparticles, length = [-1,1], batch_size = 1000, rprecis
         bmax = AC.max_impact_param(NS)
     else:
         bmax = None
-    all_evolves = pool.starmap(evolve_particles, [(AC, NS, batch_size, bmax, length, rprecision, [NS.radius, 2.*rcmax], namedir + '/' + namedir + str(i), conservation_check) for i in np.arange(nbatches)])
+    all_evolves = pool.starmap(evolve_particles, [(AC, NS, batch_size, bmax, length, rprecision, [NS.radius, rcmax], namedir + '/' + namedir + str(i), conservation_check) for i in np.arange(nbatches)])
     conservation_checks = [evolves[0] for evolves in all_evolves]
     all_masses_in = [evolves[1] for evolves in all_evolves]
     all_total_drawn = [evolves[2] for evolves in all_evolves]

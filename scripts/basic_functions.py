@@ -10,6 +10,7 @@ output_dir = 'C:/Users/gsali/Dropbox/output/axionns/'
 conv_factor_eV_GHz = 1.5192669e6
 conv_factor_km_eVinv = 1.e10/1.9732705
 conv_factor_G_eV2 = 1/14.440271
+conv_factor_Msolar_eV = 1.989e66/1.7826627
 
 # Magnitude of vectors
 def mag_vector(vs):
