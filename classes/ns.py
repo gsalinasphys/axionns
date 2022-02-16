@@ -10,11 +10,11 @@ class NeutronStar:
         self.radius = radius  # Radius of neutron star in km
         self.period = period    # Period of rotation in seconds
         self.axis = np.array(axis)  # Axis of rotation
-        self.Bsurface = Bsurface    # Magnetic field at the surface
+        self.Bsurface = Bsurface    # Magnetic field at the surface in units of 10^14 G
         self.misalign = misalign    # Misalignement angle
         self.Psi0 = Psi0  # Initial azimuthal angle
 
-    def dipole_moment(self, time):    # Magnetic dipole with magnitude in units of (10^14 G)*km^3, B in units of 10^14 G
+    def dipole_moment(self, time):    # Magnetic dipole with magnitude in units of (10^14 G)*km^3
         Psi = self.Psi0 + 2*np.pi/self.period*time
         return 0.5*self.Bsurface*np.power(self.radius, 3)*np.array([np.sin(self.misalign)*np.sin(Psi), np.sin(self.misalign)*np.cos(Psi), np.cos(self.misalign)])
 

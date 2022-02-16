@@ -1,8 +1,6 @@
 import numpy as np
 from scripts.basic_functions import mag_vector, mkdir_event, join_npys
 from classes.particles import Particles
-from classes.minicluster import AxionMiniclusterNFW
-from classes.axionstar import AxionStar
 
 # Trajectory of axion clump as point particle, starting from positon r0 with velocity v0x in the -x-direction
 def evolve_AC(AC, NS, rprecision=1e-4, save_interval = None, conservation_check = False):

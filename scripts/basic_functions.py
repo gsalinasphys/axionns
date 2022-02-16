@@ -59,7 +59,9 @@ def mkdir_event(NS, clump, r_in, v_in, n_in, size=6, chars=string.ascii_uppercas
     f.write('Radius: ' + str(NS.radius) + ' km\n')
     f.write('Period: ' + str(NS.period) + ' s\n')
     f.write('Axis of rotation: ' + str(NS.axis) + '\n')
-    f.write('Magnetic dipole moment: ' + str(NS.dipole_moment) + ' x 10^30 Am^2\n\n')
+    f.write('Surface magnetic field: ' + str(NS.Bsurface) + ' x 10^14 G\n')
+    f.write('Misalignment angle: ' + str(NS.misalign) + ' rad\n')
+    f.write('Initial azimuthal angle: ' + str(NS.Psi0) + ' rad\n\n')
 
     f.write('-'*25 + ' Axion clump properties ' + '-'*50 + '\n')
     f.write('Clump type: ' + clump.clump_type + '\n')
