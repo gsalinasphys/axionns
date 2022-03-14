@@ -1,7 +1,9 @@
 import numpy as np
-from scripts.basic_functions import G_N, c, mag_vector, numbers_times_vectors, sphere_point_picking, angle_between_vecs, conv_factor_eV_GHz
 from scipy.spatial.transform import Rotation
 from scipy.optimize import root_scalar
+
+from scripts.basic_functions import G_N, c, conv_factor_eV_GHz, mag_vector, numbers_times_vectors, sphere_point_picking, angle_between_vecs
+
 
 # A neutron star
 class NeutronStar:
@@ -10,11 +12,11 @@ class NeutronStar:
         self.radius = radius  # Radius of neutron star in km
         self.period = period    # Period of rotation in seconds
         self.axis = np.array(axis)  # Axis of rotation
-        self.Bsurface = Bsurface    # Magnetic field at the surface
+        self.Bsurface = Bsurface    # Magnetic field at the surface in units of 10^14 G
         self.misalign = misalign    # Misalignement angle
         self.Psi0 = Psi0  # Initial azimuthal angle
 
-    def dipole_moment(self, time):    # Magnetic dipole with magnitude in units of (10^14 G)*km^3, B in units of 10^14 G
+    def dipole_moment(self, time):    # Magnetic dipole with magnitude in units of (10^14 G)*km^3
         Psi = self.Psi0 + 2*np.pi/self.period*time
         return 0.5*self.Bsurface*np.power(self.radius, 3)*np.array([np.sin(self.misalign)*np.sin(Psi), np.sin(self.misalign)*np.cos(Psi), np.cos(self.misalign)])
 
@@ -42,7 +44,10 @@ class NeutronStar:
         axionmass_GHz = axionmass*1.e-5*conv_factor_eV_GHz # in GHz
         to_minimize = lambda scale: self.wplasma([scale*np.array(direction)], time)[0] - axionmass_GHz
         try:
-            return root_scalar(to_minimize, bracket=[self.radius, 100*self.radius], method='brenth').root
+            rc = root_scalar(to_minimize, bracket=[self.radius, 100*self.radius], method='brenth').root
+            percent_diff = -(self.wplasma([position], time)[0] - axionmass_GHz)/axionmass_GHz
+            if rc > self.radius and rc < 100*self.radius:
+                return rc, percent_diff
         except ValueError:
             return None
 
@@ -52,7 +57,7 @@ class NeutronStar:
             direction = sphere_point_picking()
             rc = self.conversion_radius_est(direction, time, axionmass)
             if rc is not None:
-                radii.append(rc)
+                radii.append(rc[0])
                 directions.append(direction)
         return numbers_times_vectors(np.array(radii), np.array(directions))
 
@@ -61,7 +66,7 @@ class NeutronStar:
         self.misalign = 0.
         rcmax = self.conversion_radius_est(self.axis, 0., axionmass)
         self.misalign = old_misalign
-        return rcmax
+        return rcmax[0]
 
     def conversion_radius_exact(self, position, velocity, time, axionmass):
         axionmass_GHz = axionmass*1.e-5*conv_factor_eV_GHz
@@ -70,10 +75,18 @@ class NeutronStar:
         resonant_freq2 = np.power(axionmass_GHz, 2)*omega2/(np.power(axionmass_GHz*np.cos(theta), 2) + omega2*np.power(np.sin(theta), 2))
         to_minimize = lambda scale: self.wplasma([scale*np.array(position)/mag_vector(position)], time)[0] - np.sqrt(resonant_freq2)
         try:
-            return root_scalar(to_minimize, bracket=[self.radius, 100*self.radius], method='brenth').root
+            rc = root_scalar(to_minimize, bracket=[self.radius, 100*self.radius], method='brenth').root
+            percent_diff = -(self.wplasma([position], time)[0] - np.sqrt(resonant_freq2))/np.sqrt(resonant_freq2)
+            return rc, percent_diff
         except ValueError:
             return None
 
+    def conversion_radius(self, position, velocity, time, axionmass, exact = False):
+        if exact:
+            return self.conversion_radius_exact(position, velocity, time, axionmass)
+        elif not exact:
+            return self.conversion_radius_est(position, time, axionmass)
+    
     @staticmethod
     def rotate_vector(vector, axis, angle):
         rotation_vector = angle*axis

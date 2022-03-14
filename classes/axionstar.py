@@ -1,6 +1,7 @@
 import numpy as np
 import random
-from scripts.basic_functions import sphere_point_picking, G_N, mag_vector
+
+from scripts.basic_functions import G_N, sphere_point_picking, mag_vector
 
 # A dilute axion star
 class AxionStar:

@@ -1,5 +1,6 @@
 import numpy as np
-from scripts.basic_functions import mag_vector, numbers_times_vectors, G_N, output_dir
+
+from scripts.basic_functions import G_N, output_dir, mag_vector, numbers_times_vectors
 
 # A collection of particles
 class Particles:
@@ -105,7 +106,7 @@ class Particles:
             if save_interval is not None:
                 particles_inside = np.where(np.logical_and(mag_vector(self.positions) > save_interval[0], mag_vector(self.positions) < save_interval[1]))[0]
                 
-                if iteration%100 == 0:
+                if iteration%10 == 0:
                     # Save in the format [tags, times, rx, ry, rz, vx, vy, vz]
                     data_list[0].extend(particles_inside)
                     data_list[1].extend(self.times[particles_inside])
@@ -128,7 +129,6 @@ class Particles:
 
         data_array = np.array(data_list).T
         data_array = data_array[data_array[:, 0].argsort()]
-        # data_array = data_array[::100]
 
         if save_file is not None:
             np.save(output_dir + save_file, np.array(data_array))

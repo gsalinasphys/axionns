@@ -1,8 +1,10 @@
 import numpy as np
 import random
-from scripts.basic_functions import rho_eq, mag_vector, G_N
-from classes.particles import Particles
 from scipy.spatial import ConvexHull
+
+from scripts.basic_functions import rho_eq, G_N, mag_vector
+
+from classes.particles import Particles
 
 # An axion minicluster
 class AxionMiniclusterNFW:
