@@ -97,7 +97,6 @@ class Particles:
         if conservation_check:
             energy_in, ang_momenta_in, max_percent_en, max_percent_ang = self.energies(NS), self.ang_momenta(), 0, 0
 
-        iteration = 0
         while np.any(min_or_max*mag_vector(self.positions) <= min_or_max*rlimit):
             # Update position and velocity
             self.verlet_step(NS, rprecision = rprecision)
@@ -106,16 +105,15 @@ class Particles:
             if save_interval is not None:
                 particles_inside = np.where(np.logical_and(mag_vector(self.positions) > save_interval[0], mag_vector(self.positions) < save_interval[1]))[0]
                 
-                if iteration%10 == 0:
-                    # Save in the format [tags, times, rx, ry, rz, vx, vy, vz]
-                    data_list[0].extend(particles_inside)
-                    data_list[1].extend(self.times[particles_inside])
-                    data_list[2].extend(self.positions.T[0][particles_inside])
-                    data_list[3].extend(self.positions.T[1][particles_inside])
-                    data_list[4].extend(self.positions.T[2][particles_inside])
-                    data_list[5].extend(self.velocities.T[0][particles_inside])
-                    data_list[6].extend(self.velocities.T[1][particles_inside])
-                    data_list[7].extend(self.velocities.T[2][particles_inside])
+                # Save in the format [tags, times, rx, ry, rz, vx, vy, vz]
+                data_list[0].extend(particles_inside)
+                data_list[1].extend(self.times[particles_inside])
+                data_list[2].extend(self.positions.T[0][particles_inside])
+                data_list[3].extend(self.positions.T[1][particles_inside])
+                data_list[4].extend(self.positions.T[2][particles_inside])
+                data_list[5].extend(self.velocities.T[0][particles_inside])
+                data_list[6].extend(self.velocities.T[1][particles_inside])
+                data_list[7].extend(self.velocities.T[2][particles_inside])
     
             # Check energy and angular momentum consservation
             if conservation_check:
@@ -125,8 +123,6 @@ class Particles:
                 if max_percent_ang_try > max_percent_ang:
                     max_percent_ang = max_percent_ang_try
             
-            iteration += 1
-
         data_array = np.array(data_list).T
         data_array = data_array[data_array[:, 0].argsort()]
 
