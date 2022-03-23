@@ -62,4 +62,4 @@ class AxionStar:
             vmags = vs_esc*np.ones(ndraw)
             velocities += np.array([sphere_point_picking()*vmags[i] for i in np.arange(ndraw)])
         
-        return positions, velocities
+        return positions, velocities, self.mass

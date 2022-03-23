@@ -8,6 +8,7 @@ from classes.particles import Particles
 def evolve_AC(AC, NS, rprecision=1e-4, save_interval = None, conservation_check = False):
     # Instantiate axion star position as a point particles
     AC_particle = Particles([AC.center], [AC.vcenter])
+    impact_param = AC_particle.impact_param()
     # Remove star if it will not reach the Roche radius
     roche = AC.roche(NS)
     AC_particle.remove_particles_far(roche, NS)
@@ -16,14 +17,14 @@ def evolve_AC(AC, NS, rprecision=1e-4, save_interval = None, conservation_check 
     # Evolve until it reaches the Roche radius
     conservation_checks = AC_particle.trajectories(NS, roche, min_or_max = -1, rprecision = rprecision, save_interval = save_interval, conservation_check = conservation_check)
     AC.center, AC.vcenter = AC_particle.positions[0], AC_particle.velocities[0]
-    impact_param = AC_particle.impact_param()
+
     return conservation_checks, impact_param
 
 def draw_particles_AC(AC, nparticles, bmax, length):
     if AC.clump_type_short == 'MCNFW':
         return AC.draw_particles(nparticles, bmax, length)
     elif AC.clump_type_short == 'dAS':
-        return AC.draw_particles(nparticles), AC.mass
+        return AC.draw_particles(nparticles)
 
 # Trajectory of nparticles from an axion clump in the field of a neutron star
 def evolve_particles(AC, NS, nparticles, bmax = None, length = [-1,1], rprecision=1e-4, save_interval = None, save_file = None, conservation_check = False):   # nparticles has to be larger than one
@@ -55,9 +56,9 @@ def evolve(NS, AC, pool, nparticles, length = [-1,1], batch_size = 1000, rprecis
     
     if AC.clump_type_short == 'MCNFW':
         bmax = AC.max_impact_param(NS)
+        bmax += 3*mag_vector(AC.center)/mag_vector(AC.vcenter)*AC.circ_v([np.array([AC.radius_trunc(),0,0]) + AC.center])[0]
     else:
         bmax = None
-    bmax += 3*mag_vector(AC.center)/mag_vector(AC.vcenter)*AC.circ_v([np.array([AC.radius_trunc(),0,0]) + AC.center])[0]
 
     namedir = mkdir_event(NS, AC, r_in, v_in, impact_param, r_roche, v_roche, bmax)
     

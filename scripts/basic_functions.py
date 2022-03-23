@@ -3,7 +3,7 @@ import numpy as np
 import random
 import string
 
-local_run = False
+local_run = True
 G_N = 1.325e11  # Newton's constant in km^3/M_Sun/s^2
 c = 2.99792458*1e5  # Speed of light in km/s
 rho_eq = 5.78*1e-28 # Energy density at matter radiation equality in units of 10^{-10}*M_Sun/km^3

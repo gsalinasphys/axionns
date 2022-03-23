@@ -21,7 +21,7 @@ def axions_per_traj(chosen_clump, total_drawn, mass_in):
     Ntotal_drawn = total_drawn/mass_in*chosen_clump.mass
     if chosen_clump.clump_type_short == 'MCNFW':
         Ntotal = 1e-5*conv_factor_Msolar_eV*chosen_clump.mass/Particles.axionmass
-    elif chosen_clump.clump_type_short == 'AS':
+    elif chosen_clump.clump_type_short == 'dAS':
         Ntotal = 1e-7*conv_factor_Msolar_eV*chosen_clump.mass/Particles.axionmass
 
     return Ntotal/Ntotal_drawn

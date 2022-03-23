@@ -21,12 +21,12 @@ draw_plots = False
 ############################## Define parameters here ###################################
 M_NS, R_NS = 1, 10
 
-MC_or_AS = 'MC'
+MC_or_AS = 'AS'
 Mass = 1.   # In units of 10^{-10} M_solar or 10^{-12} M_solar
 vy_in, b = -200., 0.2   # b in units of MC.radius_trunc() or AS.radius99()
 delta, concentration = 1.55, 100
 
-length, nparticles, batch_size, conservation_check, rprecision = np.array([-1,1])/300, int(640), int(10), False, 1e-3
+length, nparticles, batch_size, conservation_check, rprecision = np.array([-1,1])/300, int(150), int(10), False, 1e-3
 
 ############################ Compute trajectories ###########################################
 chosen_clump = choose_clump(Mass, vy_in, b, MC_or_AS = MC_or_AS, delta = delta, concentration = concentration)
@@ -102,6 +102,15 @@ all_ts = np.array(all_hits).T[1]
 min_t = np.min(all_ts)
 all_ts -= min_t
 all_ts /= 3600.
+
+hist_ts = np.histogram(all_ts, bins = np.linspace(0, np.max(all_ts), 50))
+max_hist = np.max(hist_ts[0])
+indices_hist = np.where(hist_ts[0] > 0.9*max_hist)
+index_max_t, index_min_t = indices_hist[0][-1], indices_hist[0][0]
+max_t, min_t = hist_ts[1][index_max_t], hist_ts[1][index_min_t]#
+indices = np.where(np.logical_and(all_ts > max_t, all_ts < min_t))
+chosen_hits = all_hits[indices]
+
 if draw_plots:
     plt.hist(all_ts, bins=np.linspace(0, np.max(all_ts), int(np.max(all_ts)) + 1));
 
@@ -122,12 +131,6 @@ if draw_plots:
     plt.close()
 
 ############################ Plot conversion surface ###########################################
-hist_ts = np.histogram(all_ts, bins = np.arange(0, int(np.max(all_ts)) + 1))
-max_hist = np.max(hist_ts[0])
-indices_hist = np.where(hist_ts[0] > 0.9*max_hist)
-max_hour, min_hour = indices_hist[0][-1] + 1, indices_hist[0][0] - 1
-indices = np.where(np.logical_and(all_ts > min_hour, all_ts < max_hour))
-chosen_hits = all_hits[indices]
 
 if draw_plots:
     X, Y, Z = np.array(chosen_hits).T[2:5]
