@@ -26,7 +26,7 @@ Mass = 1.   # In units of 10^{-10} M_solar or 10^{-12} M_solar
 vy_in, b = -200., 0.2   # b in units of MC.radius_trunc() or AS.radius99()
 delta, concentration = 1.55, 100
 
-length, nparticles, batch_size, conservation_check, rprecision = np.array([-1,1])/300, int(150), int(10), False, 1e-3
+length, nparticles, batch_size, conservation_check, rprecision = np.array([-1,1])/300, int(30000), int(2000), False, 1e-3
 
 ############################ Compute trajectories ###########################################
 chosen_clump = choose_clump(Mass, vy_in, b, MC_or_AS = MC_or_AS, delta = delta, concentration = concentration)
@@ -103,25 +103,26 @@ min_t = np.min(all_ts)
 all_ts -= min_t
 all_ts /= 3600.
 
-hist_ts = np.histogram(all_ts, bins = np.linspace(0, np.max(all_ts), 50))
+nbins = 50
+hist_ts = np.histogram(all_ts, bins = np.linspace(0, np.max(all_ts), 10*nbins))
 max_hist = np.max(hist_ts[0])
 indices_hist = np.where(hist_ts[0] > 0.9*max_hist)
-index_max_t, index_min_t = indices_hist[0][-1], indices_hist[0][0]
+index_max_t, index_min_t = indices_hist[0][-1] + 1, indices_hist[0][0] - 1
 max_t, min_t = hist_ts[1][index_max_t], hist_ts[1][index_min_t]#
-indices = np.where(np.logical_and(all_ts > max_t, all_ts < min_t))
+indices = np.where(np.logical_and(all_ts > min_t, all_ts < max_t))
 chosen_hits = all_hits[indices]
 
 if draw_plots:
-    plt.hist(all_ts, bins=np.linspace(0, np.max(all_ts), int(np.max(all_ts)) + 1));
+    plt.hist(all_ts, bins = np.linspace(0, np.max(all_ts), nbins));
 
     if MC_or_AS == 'MC':
         all_ts_up, all_ts_down = np.array(all_hits_up).T[1], np.array(all_hits_down).T[1]
         all_ts_up -= min_t
         all_ts_up /= 3600.
-        plt.hist(all_ts_up, bins=np.linspace(np.min(all_ts_up), np.max(all_ts_up), int(np.max(all_ts_up) - np.min(all_ts_up)) + 1));
+        plt.hist(all_ts_up, bins=np.linspace(np.min(all_ts_up), np.max(all_ts_up), nbins));
         all_ts_down -= min_t
         all_ts_down /= 3600.
-        plt.hist(all_ts_down, bins=np.linspace(np.min(all_ts_down), np.max(all_ts_down), int(np.max(all_ts_down) - np.min(all_ts_down)) + 1));
+        plt.hist(all_ts_down, bins=np.linspace(np.min(all_ts_down), np.max(all_ts_down), nbins));
 
     plt.xlabel('Hour')
     plt.ylabel('Conversion events')
@@ -161,7 +162,7 @@ data = []
 for i, hit in enumerate(chosen_hits):
     data.append(np.append(hit, probabilities[i]))
 
-np.save(output_dir + event + '/' + event + '_conversion.npy', data)
+np.save(output_dir + event + '/' + event + '_data.npy', data)
 
 ############################ Histogram of probabilities ###########################################
 
@@ -171,6 +172,8 @@ if draw_plots:
 
     plt.savefig(output_dir + event + '/' + event + '_probs.png')
 
-print(event)
 readme = open(output_dir + event + '/README.txt', 'a')
-readme.write("This run took " + str(round((time.time() - start_time)/60, 2)) + " minutes.\n")
+readme.write("Run Time: " + str(round((time.time() - start_time)/60, 2)) + " minutes.\n")
+
+print(event)
+print("Run Time: " + str(round((time.time() - start_time)/60, 2)) + " minutes.")
