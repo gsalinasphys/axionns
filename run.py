@@ -25,7 +25,7 @@ Mass = 1.   # In units of 10^{-10} M_solar or 10^{-12} M_solar
 vy_in, b = -200., 0.2   # b in units of MC.radius_trunc() or AS.radius99()
 delta, concentration = 1.55, 100
 
-length, nparticles, batch_size, conservation_check, rprecision = np.array([-1,1])/300, int(150), int(10), False, 2e-3
+length, nparticles, batch_size, conservation_check, rprecision = np.array([-1,1])/300, int(1600), int(100), False, 1e-3
 
 ############################ Compute trajectories ###########################################
 chosen_clump = choose_clump(Mass, vy_in, b, MC_or_AS = MC_or_AS, delta = delta, concentration = concentration)
@@ -61,7 +61,6 @@ if MC_or_AS == 'MC':
         
 ############################ Plot some trajectories ###########################################
 ax = plt.gca()
-ax.set_aspect('equal')
 nsamples = np.min([int(1e3), nparticles])
 part_trajs_cut = part_trajs[:int(nsamples*float(len(part_trajs))/nparticles)]
 for i in np.arange(int(part_trajs_cut[-1][0])):
@@ -105,10 +104,10 @@ if MC_or_AS == 'MC':
     all_ts_up, all_ts_down = np.array(all_hits_up).T[1], np.array(all_hits_down).T[1]
     all_ts_up -= min_t
     all_ts_up /= 3600.
-    plt.hist(all_ts_up, bins=np.linspace(0, np.max(all_ts_up), int(np.max(all_ts_up)) + 1));
+    plt.hist(all_ts_up, bins=np.linspace(np.min(all_ts_up), np.max(all_ts_up), int(np.max(all_ts_up) - np.min(all_ts_up)) + 1));
     all_ts_down -= min_t
     all_ts_down /= 3600.
-    plt.hist(all_ts_down, bins=np.linspace(0, np.max(all_ts_down), int(np.max(all_ts_down)) + 1));
+    plt.hist(all_ts_down, bins=np.linspace(np.min(all_ts_down), np.max(all_ts_down), int(np.max(all_ts_down) - np.min(all_ts_down)) + 1));
 
 plt.xlabel('Hour')
 plt.ylabel('Conversion events')
@@ -121,7 +120,7 @@ plt.close()
 hist_ts = np.histogram(all_ts, bins = np.arange(0, int(np.max(all_ts)) + 1))
 max_hist = np.max(hist_ts[0])
 indices_hist = np.where(hist_ts[0] > 0.9*max_hist)
-max_hour, min_hour = indices_hist[0][-1], indices_hist[0][0]
+max_hour, min_hour = indices_hist[0][-1] + 1, indices_hist[0][0] - 1
 indices = np.where(np.logical_and(all_ts > min_hour, all_ts < max_hour))
 chosen_hits = all_hits[indices]
 
@@ -163,4 +162,5 @@ plt.xlabel('Log_10(Probability)')
 plt.savefig(output_dir + event + '/' + event + '_probs.png')
 
 print(event)
-print("This run took " + str(round((time.time()/60 - start_time)/60, 2)) + " minutes.")
+readme = open(output_dir + event + '/README.txt', 'a')
+readme.write("This run took " + str(round((time.time() - start_time)/60, 2)) + " minutes.\n")

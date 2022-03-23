@@ -45,4 +45,4 @@ def add_to_readme(event, part_trajs, chosen_clump, axions_per_traj, conservation
 def add_to_readme_probs(event, gag):
     readme = open(output_dir + event + '/README.txt', 'a')
     readme.write('-'*25 + ' Conversion Probabilities ' + '-'*50 + '\n')
-    readme.write('Axion-photon coupling: ' +  '{:.2e}'.format(gag) + ' x 10^{-14} GeV^{-1}\n')
+    readme.write('Axion-photon coupling: ' +  '{:.2e}'.format(gag) + ' x 10^{-14} GeV^{-1}\n\n')
