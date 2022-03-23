@@ -7,7 +7,7 @@
 ####################################
 
 #SBATCH -J AxionNS
-#SBATCH -t 01:00:00
+#SBATCH -t 00:10:00
 #SBATCH -A cops    # Account
 #SBATCH -p cops    # Partition
 #SBATCH --ntasks=64
