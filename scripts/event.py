@@ -30,14 +30,16 @@ def add_to_readme(event, part_trajs, chosen_clump, axions_per_traj, conservation
     nparticles = int(part_trajs[-1][0]) + 1
 
     readme = open(output_dir + event + '/README.txt', 'a')
+    if chosen_clump.clump_type_short == 'MCNFW':
+        readme.write('Sampling cylinder length: ' + '{:.2e}'.format((length[1] - length[0])*chosen_clump.radius_trunc()))
+        readme.write('Sampling cylinder centered at ' + '{:.2e}'.format((length[1] + length[0])*chosen_clump.radius_trunc()) + ' km from the projection of the clump\'s center on the y-axis.\n\n')
     readme.write('Number of saved trajectories: ' + str(nparticles) + '\n')
     if conservation_check:
         readme.write('Energy and angular momentum conservation was checked. It is valid up to ' + str(np.round(np.max(conservation_check_result), 2)) + ' percent.\n')
     else:
         readme.write('Energy and angular momentum conservation was not checked.\n')
-    readme.write('Each trajectory correponds to ' + '{:.2e}'.format(axions_per_traj) + ' axions.\n')
-    if chosen_clump.clump_type_short == 'MCNFW':
-        readme.write('Axions were drawn from a cylinder of length ' + '{:.2e}'.format((length[1] - length[0])*chosen_clump.radius_trunc()) + ' km centered at ' + '{:.2e}'.format((length[1] + length[0])*chosen_clump.radius_trunc()) + ' km from the projection of the clump\'s center on the y-axis.\n\n')
+    readme.write('Each trajectory correponds to ' + '{:.2e}'.format(axions_per_traj) + ' axions.\n\n')
+
     readme.close()
         
 def add_to_readme_probs(event, gag):

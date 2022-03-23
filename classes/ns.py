@@ -4,7 +4,6 @@ from scipy.optimize import root_scalar
 
 from scripts.basic_functions import G_N, c, conv_factor_eV_GHz, mag_vector, numbers_times_vectors, sphere_point_picking, angle_between_vecs
 
-
 # A neutron star
 class NeutronStar:
     def __init__(self, mass, radius, period = 1, axis = np.array([0, 0, 1.]), Bsurface = 1., misalign = 0., Psi0 = 0.):

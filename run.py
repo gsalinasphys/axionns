@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import multiprocessing as mp
 import shutil
 import time
+from mpl_toolkits.mplot3d import Axes3D
 
 from classes.ns import NeutronStar
 from classes.particles import Particles
@@ -24,7 +25,7 @@ Mass = 1.   # In units of 10^{-10} M_solar or 10^{-12} M_solar
 vy_in, b = -200., 0.2   # b in units of MC.radius_trunc() or AS.radius99()
 delta, concentration = 1.55, 100
 
-length, nparticles, batch_size, conservation_check, rprecision = np.array([-1,1])/300, int(1500), int(100), False, 2e-3
+length, nparticles, batch_size, conservation_check, rprecision = np.array([-1,1])/300, int(150), int(10), False, 2e-3
 
 ############################ Compute trajectories ###########################################
 chosen_clump = choose_clump(Mass, vy_in, b, MC_or_AS = MC_or_AS, delta = delta, concentration = concentration)
@@ -52,8 +53,8 @@ if MC_or_AS == 'MC':
 
     part_trajs_up, part_trajs_down = np.load(output_dir + event_up[0] + '/' + event_up[0] + '.npy'), np.load(output_dir + event_down[0] + '/' + event_down[0] + '.npy')
     
-    # shutil.rmtree(output_dir + event_up[0])
-    # shutil.rmtree(output_dir + event_down[0])
+    shutil.rmtree(output_dir + event_up[0])
+    shutil.rmtree(output_dir + event_down[0])
     
     np.save(output_dir + event + '/' + event + '_up.npy', part_trajs_up)
     np.save(output_dir + event + '/' + event + '_down.npy', part_trajs_down)

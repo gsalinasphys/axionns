@@ -57,7 +57,10 @@ class Particles:
             self.times -= time_periodicity
 
         self.times += dts
-        
+
+    def impact_param(self):
+        rdotvs = np.cross(self.positions, self.velocities)
+        return mag_vector(rdotvs)/mag_vector(self.velocities)
 
     # Calculate the distances of minimum approach for the particles
     def min_approach(self, NS):
