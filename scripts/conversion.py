@@ -43,7 +43,7 @@ def find_hits(single_particle, NS, precision = 1e-3, exact = False):
 
         return np.array(hits)
     except:
-        return hits
+        return np.array(hits)
 
 def find_all_hits(single_particles, NS, pool, precision = 1e-3, exact = False):
     all_hits = pool.starmap(find_hits, [(single_particle, NS, precision, exact) for single_particle in single_particles])

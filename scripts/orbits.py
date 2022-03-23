@@ -62,7 +62,7 @@ def evolve(NS, AC, pool, nparticles, length = [-1,1], batch_size = 1000, rprecis
 
     namedir = mkdir_event(NS, AC, r_in, v_in, impact_param, r_roche, v_roche, bmax)
     
-    all_evolves = pool.starmap(evolve_particles, [(AC, NS, batch_size, bmax, length, rprecision, [NS.radius, rcmax], namedir + '/' + namedir + str(i), conservation_check) for i in np.arange(nbatches)])
+    all_evolves = pool.starmap(evolve_particles, [(AC, NS, batch_size, bmax, length, rprecision, [NS.radius, 2*rcmax], namedir + '/' + namedir + str(i), conservation_check) for i in np.arange(nbatches)])
     conservation_checks = [evolves[0] for evolves in all_evolves]
     all_masses_in = [evolves[1] for evolves in all_evolves]
     all_total_drawn = [evolves[2] for evolves in all_evolves]
