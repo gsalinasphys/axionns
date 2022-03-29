@@ -5,7 +5,7 @@ from scripts.basic_functions import mag_vector, mkdir_event, join_npys
 from classes.particles import Particles
 
 # Trajectory of axion clump as point particle, starting from positon r0 with velocity v0x in the -x-direction
-def evolve_AC(AC, NS, rprecision=1e-4, save_interval = None, conservation_check = False):
+def evolve_AC(AC, NS, rprecision=1e-3, save_interval = None, conservation_check = False):
     # Instantiate axion star position as a point particles
     AC_particle = Particles([AC.center], [AC.vcenter])
     impact_param = AC_particle.impact_param()
@@ -27,7 +27,7 @@ def draw_particles_AC(AC, nparticles, bmax, length):
         return AC.draw_particles(nparticles)
 
 # Trajectory of nparticles from an axion clump in the field of a neutron star
-def evolve_particles(AC, NS, nparticles, bmax = None, length = [-1,1], rprecision=1e-4, save_interval = None, save_file = None, conservation_check = False):   # nparticles has to be larger than one
+def evolve_particles(AC, NS, nparticles, bmax = None, length = [-1,1], rprecision=1e-3, save_interval = None, save_file = None, conservation_check = False):   # nparticles has to be larger than one
     # Replace axion clump by collection of free particles
     particles = Particles([], [])
     all_mass_inside, total_drawn = [], 0
@@ -44,7 +44,7 @@ def evolve_particles(AC, NS, nparticles, bmax = None, length = [-1,1], rprecisio
     rmax = np.max(mag_vector(particles.positions))
     return particles.trajectories(NS, rmax, rprecision = rprecision, save_interval = save_interval, save_file = save_file, conservation_check = conservation_check), np.mean(all_mass_inside), total_drawn
 
-def evolve(NS, AC, pool, nparticles, length = [-1,1], batch_size = 1000, rprecision=1e-4, conservation_check = False):
+def evolve(NS, AC, pool, nparticles, length = [-1,1], batch_size = 1000, rprecision=1e-3, conservation_check = False):
     nbatches = int(nparticles/batch_size)
     r_in, v_in = AC.center, AC.vcenter
     if mag_vector(v_in) != -v_in[1] and AC.clump_type_short == 'MCNFW':

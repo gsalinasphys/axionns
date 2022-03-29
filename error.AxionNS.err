@@ -1,4 +1,0 @@
-run.py:93: MatplotlibDeprecationWarning: Adding an axes using the same arguments as a previous axes currently reuses the earlier instance.  In a future version, a new instance will always be created and returned.  Meanwhile, this warning can be suppressed, and the future behavior ensured, by passing a unique label to each axes instance.
-  ax = plt.axes(projection='3d')
-/cfs/home/guvi3498/axionns/scripts/conversion.py:77: RuntimeWarning: divide by zero encountered in double_scalars
-  return conv_factor_eV_GHz*np.power(conv_factor_G_eV2, 2)*conv_factor_km_eVinv*1.e-18/2.*np.power(gag*mag_vector(BNS)*np.sin(theta), 2)*np.pi*np.power(axionmass_GHz, 5)/(2*k*np.abs(wp_bar_prime))/np.power(np.power(k, 2) + np.power(axionmass_GHz*np.sin(theta), 2), 2)

@@ -31,7 +31,7 @@ def add_to_readme(event, part_trajs, chosen_clump, axions_per_traj, conservation
 
     readme = open(output_dir + event + '/README.txt', 'a')
     if chosen_clump.clump_type_short == 'MCNFW':
-        readme.write('Sampling cylinder length: ' + '{:.2e}'.format((length[1] - length[0])*chosen_clump.radius_trunc()))
+        readme.write('Sampling cylinder length: ' + '{:.2e}'.format((length[1] - length[0])*chosen_clump.radius_trunc()) + ' km\n')
         readme.write('Sampling cylinder centered at ' + '{:.2e}'.format((length[1] + length[0])*chosen_clump.radius_trunc()) + ' km from the projection of the clump\'s center on the y-axis.\n\n')
     readme.write('Number of saved trajectories: ' + str(nparticles) + '\n')
     if conservation_check:

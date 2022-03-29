@@ -10,7 +10,7 @@ rho_eq = 5.78*1e-28 # Energy density at matter radiation equality in units of 10
 if local_run:
     output_dir = '/home/gsalinas/Dropbox/output/axionns/'
 else:
-    output_dir = '/cfs/data/guvi3498/'
+    output_dir = '/cfs/data/guvi3498/'  # Change user here
 conv_factor_eV_GHz = 1.5192669e6
 conv_factor_km_eVinv = 1.e10/1.9732705
 conv_factor_G_eV2 = 1/14.440271
